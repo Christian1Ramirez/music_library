@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, Suspense, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Gallery from "./components/Gallery";
 import SearchBar from "./components/SearchBar";
@@ -7,11 +7,20 @@ import { SearchContext } from "./contexts/SearchContext";
 import AlbumView from "./components/AlbumView";
 import ArtistView from "./components/ArtistView";
 import "./App.css";
+import { createResource as fetchData } from './helper'
+import Spinner from "./components/Spinner";
 
 function App() {
   let [message, setMessage] = useState("Search for Musix");
-  let [data, setData] = useState([]);
+  let [data, setData] = useState(null);
   let searchInput = useRef("");
+
+  useEffect(() => {
+    if (message) {
+        setData(fetchData(message))
+    }
+}, [message])
+
 
   const handleSearch = (e, search) => {
     e.preventDefault();
@@ -38,6 +47,16 @@ function App() {
     }
   };
 
+  const renderGallery = () => {
+    if(data) {
+        return (
+            <Suspense fallback={<Spinner />}>
+                <Gallery data={data} />
+            </Suspense>
+        )
+    }
+}
+
   return (
     <div className="App">
       {message}
@@ -56,7 +75,7 @@ function App() {
                   <SearchBar />
                 </SearchContext.Provider>
                 <DataContext.Provider value={data}>
-                  <Gallery />
+                  <Gallery /> 
                 </DataContext.Provider>
               </>
             }
