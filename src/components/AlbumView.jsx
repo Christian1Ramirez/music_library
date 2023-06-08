@@ -7,15 +7,13 @@ export default function AlbumView() {
      const [albumData, setAlbumData] = useState([]);
 
      useEffect(() => {
-        const API_URL = `http://localhost:4000/song/${id}`;
-        const fetchData = async() => {
-            const response = await fetch(API_URL);
-            const resData = await response.json() 
-            setAlbumData(resData.results);
-        }
-        fetchData();
-
-     }, [id])
+      const fetchData = async () => {
+          const response = await fetch(`https://itunes.apple.com/lookup?id=${id}&entity=song`);
+          const resData = await response.json();
+          setAlbumData(resData.results);
+      }
+      fetchData();
+  }, [id]);
 
      const justSongs = albumData.filter(entry => entry.wrapperType === 'track');
      
